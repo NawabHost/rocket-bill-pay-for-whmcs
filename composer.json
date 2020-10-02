@@ -1,0 +1,25 @@
+{
+    "name": "aminulbd/rocket-bill-pay-for-whmcs",
+    "description": "Rocket Bill Pay Payment Gateway for WHMCS",
+    "keywords": [
+        "whmcs",
+        "rocket",
+        "rocket bill pay",
+        "gateway module"
+    ],
+    "homepage": "http://www.aminul.net/project/rocket-bill-pay-for-whmcs",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Aminul Islam",
+            "email": "me@aminul.net",
+            "homepage": "https://aminul.net/",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "email": "me@aminul.net",
+        "forum": "https://aminul.net/",
+        "wiki": "https://aminul.net/"
+    }
+}
