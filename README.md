@@ -20,5 +20,5 @@ Not tested for older version but should work.
 ## Todo
 
 - Better support for any template
-- Use bKash logo for payment button
+- Use Rocket logo for payment button
 - Store fee record
