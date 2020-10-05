@@ -13,9 +13,13 @@ Rocket Bill Pay module allow you to integrate payment solutions with the WHMCS a
 
 ## Requirements
 
-WHMCS 8 Is required.
+Support all major WHMCS version including version 6, 7 & 8.
 
-Not tested for older version but should work.
+
+# FAQs
+
+- How can I get the API?
+    - Please contact your Rocket account manger to get API.
 
 ## Todo
 

@@ -1,8 +1,6 @@
 <?php
 
 use Carbon\Carbon;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
 use Symfony\Component\HttpFoundation\Request;
 use WHMCS\Database\Capsule;
 
@@ -78,9 +76,9 @@ class RocketBillPay
     public $total;
 
     /**
-     * @var \GuzzleHttp\Client
+     * @var string
      */
-    protected $httpClient;
+    protected $baseUrl;
 
     /**
      * @var \Symfony\Component\HttpFoundation\Request
@@ -98,9 +96,10 @@ class RocketBillPay
     function __construct()
     {
         $this->setGateway();
-        $this->setHttpClient();
         $this->setRequest();
         $this->setInvoice();
+
+        $this->baseUrl = $this->isSandbox ? 'http://103.11.136.153/BillPayGWTest/BillInfoService' : 'http://103.11.136.153/BillPayGW/BillInfoService';
     }
 
     /**
@@ -136,36 +135,11 @@ class RocketBillPay
     }
 
     /**
-     * Get and set request
+     * Set request
      */
     private function setRequest()
     {
         $this->request = Request::createFromGlobals();
-    }
-
-    /**
-     * Set guzzle as HTTP client.
-     */
-    private function setHttpClient()
-    {
-        $baseUri = 'http://103.11.136.153/BillPayGW/';
-        if ($this->isSandbox) {
-            $baseUri = 'http://103.11.136.153/BillPayGWTest/';
-        }
-        $this->httpClient = new Client(
-            [
-                'base_uri'    => $baseUri,
-                'http_errors' => false,
-                'timeout'     => 30,
-                'auth'        => [
-                    $this->gatewayParams['authUser'],
-                    $this->gatewayParams['authPassword'],
-                ],
-                'headers'     => [
-                    'Accept' => 'application/json',
-                ],
-            ]
-        );
     }
 
     /**
@@ -184,7 +158,7 @@ class RocketBillPay
     }
 
     /**
-     * Set currency
+     * Set currency.
      */
     private function setCurrency()
     {
@@ -211,7 +185,7 @@ class RocketBillPay
     }
 
     /**
-     * Set Fee.
+     * Set fee.
      */
     private function setFee()
     {
@@ -219,7 +193,7 @@ class RocketBillPay
     }
 
     /**
-     * Set Total.
+     * Set total.
      */
     private function setTotal()
     {
@@ -227,7 +201,7 @@ class RocketBillPay
     }
 
     /**
-     * Check if transaction if exists.
+     * Check if transaction is exists.
      *
      * @param string $txnid
      *
@@ -281,80 +255,52 @@ class RocketBillPay
     }
 
     /**
-     * Get error message by code.
-     *
-     * @param string $code
-     *
-     * @return string
-     */
-    private function getErrorMessage($code)
-    {
-        $errors = [
-            '01' => 'Invalid Basic Authentication',
-            '02' => 'Invalid Host Authentication',
-            '03' => 'Invalid Authentication',
-            '04' => 'Invalid Operation Code',
-            '05' => 'Biller Short Code Missing',
-            '06' => 'User Id Missing',
-            '07' => 'Password Missing',
-            '08' => 'Operation Code Missing',
-            '09' => 'Bill Ref No Missing',
-            '10' => 'Bill Amount Missing',
-            '11' => 'Invalid Bill Amount',
-            '13' => 'Txn Id Missing',
-        ];
-
-        return isset($errors[$code]) ? $errors[$code] : 'Invalid error code';
-    }
-
-    /**
-     * Verify Transaction.
+     * Verify transaction.
      *
      * @return array
      */
     public function verifyPayment()
     {
-        try {
-            $txnid           = $this->request->get('txnid');
-            $fields          = $this->credential;
-            $fields['txnid'] = $txnid;
-            $response        = $this->httpClient->post('BillInfoService', [
-                'query' => $fields,
-            ]);
+        $txnid           = $this->request->get('txnid');
+        $fields          = $this->credential;
+        $fields['txnid'] = $txnid;
+        $context         = [
+            'http' => [
+                'method'  => 'GET',
+                'header'  => "Authorization: Basic " . base64_encode($this->gatewayParams['authUser'] . ":" . $this->gatewayParams['authPassword']),
+                'timeout' => 30,
+            ],
+        ];
+        $context         = stream_context_create($context);
+        $query           = http_build_query($fields);
+        $url             = $this->baseUrl . '?' . $query;
+        $response        = file_get_contents($url, false, $context);
+        $data            = explode('|', $response);
 
-            $data = explode('|', $response->getBody()->getContents());
-
-            if (is_array($data)) {
-                if ($data[0] === $this->credential['shortcode']) {
-                    return [
-                        'status'    => 'success',
-                        'message'   => 'Transaction ID has been verified.',
-                        'txnid'     => $txnid,
-                        'shortcode' => $data[0],
-                        'reference' => $data[1],
-                        'amount'    => $data[2],
-                        'datetime'  => $data[3],
-                        'account'   => $data[4],
-                    ];
-                }
-
-                return [
-                    'status'  => 'error',
-                    'code'    => $data[0],
-                    'message' => $data[1],
-                ];
-            }
-
+        if (!is_array($data)) {
             return [
                 'status'  => 'error',
                 'message' => 'Invalid response from Rocket Bill Pay API.',
             ];
-        } catch (GuzzleException $exception) {
+        }
+
+        if ($data[0] === $this->credential['shortcode']) {
             return [
-                'status'  => 'error',
-                'message' => $exception->getMessage(),
+                'status'    => 'success',
+                'message'   => 'Transaction ID has been verified.',
+                'txnid'     => $txnid,
+                'shortcode' => $data[0],
+                'reference' => $data[1],
+                'amount'    => $data[2],
+                'datetime'  => $data[3],
+                'account'   => $data[4],
             ];
         }
+
+        return [
+            'status'  => 'error',
+            'message' => isset($data[1]) ? $data[1] : 'Unknown error',
+        ];
     }
 
     /**
@@ -425,5 +371,4 @@ if (!$rocketBillPay->isActive) {
 }
 
 header('Content-Type: application/json');
-
-echo json_encode($rocketBillPay->makeTransaction());
+die(json_encode($rocketBillPay->makeTransaction()));
