@@ -93,7 +93,7 @@ class RocketBillPay
     /**
      * RocketBillPay constructor.
      */
-    function __construct()
+    public function __construct()
     {
         $this->setGateway();
         $this->setRequest();
@@ -248,6 +248,8 @@ class RocketBillPay
             'transid'   => $txnid,
             'gateway'   => $this->gatewayModuleName,
             'date'      => Carbon::now()->toDateTimeString(),
+            'amount'    => $this->due,
+            'fees'      => $this->fee,
         ];
         $add    = localAPI('AddInvoicePayment', $fields);
 
