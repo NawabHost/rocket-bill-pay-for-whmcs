@@ -42,13 +42,13 @@ function rocketbillpay_config()
             'Default'      => '',
             'Description'  => 'Enter the api password here',
         ],
-        'authUser'          => [
+        'authUser'     => [
             'FriendlyName' => 'Auth Username',
             'Type'         => 'password',
             'Size'         => '25',
             'Description'  => 'API Auth user to access the API.',
         ],
-        'authPassword'          => [
+        'authPassword' => [
             'FriendlyName' => 'Auth Password',
             'Type'         => 'password',
             'Size'         => '25',

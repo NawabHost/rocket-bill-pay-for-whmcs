@@ -1,31 +1,31 @@
 {
-    "schema": "1.0.2",
-    "type": "whmcs-gateways",
-    "name": "rocket-bill-pay",
-    "license": "MIT",
-    "category": "gateway",
-    "description": {
-        "name": "Rocket Bill Pay Payment Gateway",
-        "tagline": "Easily collect your payment by using Rocket bill pay in your WHMCS Billing.",
-        "long": "",
-        "features": [
-            "WHMCS 8 Support"
-        ]
-    },
-    "logo": {
-        "filename": "logo.png"
-    },
-    "support": {
-        "homepage": "https://aminul.net/project/rocket-bill-pay-for-whmcs/", 
-        "learn_more": "https://aminul.net/project/rocket-bill-pay-for-whmcs/",
-        "email": "me@aminul.net", 
-        "support_url": "https://aminul.net/project/rocket-bill-pay-for-whmcs/", 
-        "docs_url": "https://aminul.net/project/rocket-bill-pay-for-whmcs/"
-    },
-    "authors": [
-        {
-            "name": "Aminul Islam",
-            "homepage": "https://aminul.net/"
-        }
+  "schema": "1.0.2",
+  "type": "whmcs-gateways",
+  "name": "rocket-bill-pay",
+  "license": "MIT",
+  "category": "gateway",
+  "description": {
+    "name": "Rocket Bill Pay Payment Gateway",
+    "tagline": "Easily collect your payment by using Rocket bill pay in your WHMCS Billing.",
+    "long": "",
+    "features": [
+      "WHMCS 8 Support"
     ]
+  },
+  "logo": {
+    "filename": "logo.png"
+  },
+  "support": {
+    "homepage": "https://aminul.net/project/rocket-bill-pay-for-whmcs/",
+    "learn_more": "https://aminul.net/project/rocket-bill-pay-for-whmcs/",
+    "email": "me@aminul.net",
+    "support_url": "https://aminul.net/project/rocket-bill-pay-for-whmcs/",
+    "docs_url": "https://aminul.net/project/rocket-bill-pay-for-whmcs/"
+  },
+  "authors": [
+    {
+      "name": "Aminul Islam",
+      "homepage": "https://aminul.net/"
+    }
+  ]
 }
